@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 
 @Controller('songs')
 export class SongsController {
@@ -10,5 +10,10 @@ export class SongsController {
   @Get('IT')
   findAllItalian() {
     return 'Placeholder for Italian Songs in Spotifapi';
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return `Placeholder for Song ${id} in Spotifapi`;
   }
 }
