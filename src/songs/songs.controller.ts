@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
 @Controller('songs')
 export class SongsController {
@@ -15,5 +15,10 @@ export class SongsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return `Placeholder for Song ${id} in Spotifapi`;
+  }
+
+  @Post()
+  create(@Body() body) {
+    return body;
   }
 }
