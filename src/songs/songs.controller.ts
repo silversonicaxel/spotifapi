@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Res,
 } from '@nestjs/common';
@@ -44,5 +46,15 @@ export class SongsController {
   @HttpCode(HttpStatus.GONE)
   createItalian(@Body() body) {
     return body;
+  }
+
+  @Patch(':id')
+  updateOne(@Param('id') id: string, @Body() body) {
+    return `Placeholder for Song ${id} in Spotifapi`;
+  }
+
+  @Delete(':id')
+  deleteOne(@Param('id') id: string) {
+    return `Placeholder for Song ${id} in Spotifapi`;
   }
 }
