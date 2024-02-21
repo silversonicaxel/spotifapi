@@ -16,12 +16,12 @@ import { Response } from 'express';
 export class SongsController {
   @Get()
   findAll() {
-    return 'Placeholder for Songs in Spotifapi';
+    return 'findAll Songs in Spotifapi';
   }
 
   @Get('IT')
   findAllItalian() {
-    return 'Placeholder for Italian Songs in Spotifapi';
+    return 'findAll Italian Songs in Spotifapi';
   }
 
   /**
@@ -29,12 +29,12 @@ export class SongsController {
    */
   @Get('DE')
   findAllGerman(@Res() response: Response) {
-    response.status(200).send('Placeholder for German Songs in Spotifapi');
+    response.status(200).send('findAll German Songs in Spotifapi');
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return `Placeholder for Song ${id} in Spotifapi`;
+    return `find Song ${id} in Spotifapi`;
   }
 
   @Post()
@@ -50,11 +50,11 @@ export class SongsController {
 
   @Patch(':id')
   updateOne(@Param('id') id: string, @Body() body) {
-    return `Placeholder for Song ${id} in Spotifapi`;
+    return `update Song ${id} in Spotifapi`;
   }
 
   @Delete(':id')
   deleteOne(@Param('id') id: string) {
-    return `Placeholder for Song ${id} in Spotifapi`;
+    return `delete Song ${id} in Spotifapi`;
   }
 }
