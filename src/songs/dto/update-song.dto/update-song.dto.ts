@@ -1,7 +1,4 @@
-export class UpdateSongDto {
-  readonly name?: string;
-  readonly artist?: string;
-  readonly artistId?: string;
-  readonly album?: string;
-  readonly albumId?: string;
-}
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateSongDto } from '../create-song.dto/create-song.dto';
+
+export class UpdateSongDto extends PartialType(CreateSongDto) {}

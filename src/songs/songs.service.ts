@@ -39,11 +39,14 @@ export class SongsService {
   }
 
   create(body: any) {
+    const song = body;
+    song.id = (this.songs.length + 1).toString();
     this.songs.push(body);
   }
 
   updateOne(id: string, body: any) {
     const foundSongIndex = this.#findIndex(id);
+    console.log(foundSongIndex);
     if (foundSongIndex) {
       this.songs[foundSongIndex] = {
         ...this.songs[foundSongIndex],
