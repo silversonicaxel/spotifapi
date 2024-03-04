@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -17,6 +18,15 @@ export class SongsController {
   @Get()
   findAll() {
     return 'findAll Songs in Spotifapi';
+  }
+
+  /**
+   * Alternative to findAll()
+   */
+  @Get()
+  findAllPaginated(@Query() pagination) {
+    const { limit, offset } = pagination;
+    return `findAllPaginated Songs with limit ${limit} and offset ${offset} in Spotifapi`;
   }
 
   @Get('IT')
