@@ -42,10 +42,13 @@ export class SongsService {
     this.songs.push(body);
   }
 
-  updateOne(id: string, body: Song) {
+  updateOne(id: string, body: any) {
     const foundSongIndex = this.#findIndex(id);
     if (foundSongIndex) {
-      this.songs[foundSongIndex] = body;
+      this.songs[foundSongIndex] = {
+        ...this.songs[foundSongIndex],
+        ...body,
+      };
     }
   }
 

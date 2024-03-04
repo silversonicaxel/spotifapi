@@ -8,6 +8,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { SongsService } from './songs.service';
+import { CreateSongDto } from './dto/create-song.dto/create-song.dto';
+import { UpdateSongDto } from './dto/update-song.dto/update-song.dto';
 
 @Controller('songs')
 export class SongsController {
@@ -48,9 +50,9 @@ export class SongsController {
   }
 
   @Post()
-  create(@Body() body) {
+  create(@Body() createSongDto: CreateSongDto) {
     // return body;
-    return this.songsService.create(body);
+    return this.songsService.create(createSongDto);
   }
 
   // @Post('IT')
@@ -60,9 +62,9 @@ export class SongsController {
   // }
 
   @Patch(':id')
-  updateOne(@Param('id') id: string, @Body() body) {
+  updateOne(@Param('id') id: string, @Body() updateSongDto: UpdateSongDto) {
     // return `update Song ${id} in Spotifapi`;
-    return this.songsService.updateOne(id, body);
+    return this.songsService.updateOne(id, updateSongDto);
   }
 
   @Delete(':id')
