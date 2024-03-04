@@ -59,6 +59,7 @@ export class SongsController {
   }
 
   @Patch(':id')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateOne(@Param('id') id: string, @Body() body) {
     return `update Song ${id} in Spotifapi`;
   }
