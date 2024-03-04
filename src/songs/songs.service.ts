@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Song } from './entities/songs.entity';
 
 @Injectable()
@@ -14,23 +14,38 @@ export class SongsService {
     },
   ];
 
+  #findIndex(id: string) {
+    const songIndex = this.songs.findIndex((item) => item.id === id);
+
+    if (!songIndex) {
+      throw new NotFoundException(`song ${id} not found`);
+    }
+
+    return songIndex;
+  }
+
   findAll() {
     return this.songs;
   }
 
   findOne(id: string) {
-    return this.songs.find((item) => item.id === id);
+    const song = this.songs.find((item) => item.id === id);
+
+    if (!song) {
+      throw new NotFoundException(`song ${id} not found`);
+    }
+
+    return song;
   }
 
   create(body: any) {
     this.songs.push(body);
   }
 
-  updateOne(id: string, body: any) {
-    this.songs.push(body);
-
-    const foundSong = this.findOne(id);
-    if (foundSong) {
+  updateOne(id: string, body: Song) {
+    const foundSongIndex = this.#findIndex(id);
+    if (foundSongIndex) {
+      this.songs[foundSongIndex] = body;
     }
   }
 
