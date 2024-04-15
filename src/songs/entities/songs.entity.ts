@@ -1,12 +1,14 @@
 import {
   Column,
   Entity,
+  Index,
   JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Author } from './authors.entity/authors.entity';
 
+@Index(['name', 'album'])
 @Entity('songs')
 export class Song {
   @PrimaryGeneratedColumn()
