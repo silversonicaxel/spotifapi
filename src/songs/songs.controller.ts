@@ -6,28 +6,29 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { SongsService } from './songs.service';
 import { CreateSongDto } from './dto/create-song.dto/create-song.dto';
 import { UpdateSongDto } from './dto/update-song.dto/update-song.dto';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
 
 @Controller('songs')
 export class SongsController {
   constructor(private readonly songsService: SongsService) {}
 
   @Get()
-  findAll() {
-    // return 'findAll Songs in Spotifapi';
-    return this.songsService.findAll();
+  findAll(@Query() paginationQuery: PaginationQueryDto) {
+    return this.songsService.findAll(paginationQuery);
   }
 
   /**
    * Alternative to findAll()
    */
   // @Get()
-  // findAllPaginated(@Query() pagination) {
-  //   const { limit, offset } = pagination;
-  //   return `findAllPaginated Songs with limit ${limit} and offset ${offset} in Spotifapi`;
+  // findAll() {
+  //   // return 'findAll Songs in Spotifapi';
+  //   return this.songsService.findAll();
   // }
 
   // @Get('IT')
