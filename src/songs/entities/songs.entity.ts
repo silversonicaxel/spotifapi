@@ -8,14 +8,14 @@ import {
 } from 'typeorm';
 import { Author } from './authors.entity/authors.entity';
 
-@Index(['name', 'album'])
+@Index(['title', 'album'])
 @Entity('songs')
 export class Song {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  name: string;
+  title: string;
 
   @Column()
   artist: string;
