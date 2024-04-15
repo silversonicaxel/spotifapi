@@ -15,7 +15,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: 'spotifapi_pass',
       database: 'postgres',
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: true, // for development only
     }),
   ],
   controllers: [AppController],
