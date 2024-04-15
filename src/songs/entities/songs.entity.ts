@@ -32,4 +32,7 @@ export class Song {
     cascade: true,
   })
   authors: Author[];
+
+  @Column({ default: 0 })
+  recommendations: number;
 }
