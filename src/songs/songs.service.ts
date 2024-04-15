@@ -13,11 +13,14 @@ export class SongsService {
   ) {}
 
   findAll() {
-    return this.songRepo.find();
+    return this.songRepo.find({ relations: { authors: true } });
   }
 
   async findOne(id: string) {
-    const song = await this.songRepo.findOne({ where: { id: +id } });
+    const song = await this.songRepo.findOne({
+      where: { id: +id },
+      relations: { authors: true },
+    });
 
     if (!song) {
       throw new NotFoundException(`song ${id} not found`);
