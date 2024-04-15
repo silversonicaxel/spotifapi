@@ -28,6 +28,8 @@ export class Song {
   albumId: string;
 
   @JoinTable()
-  @ManyToMany(() => Author, (author) => author.songs)
-  authors: string[];
+  @ManyToMany(() => Author, (author) => author.songs, {
+    cascade: true,
+  })
+  authors: Author[];
 }
