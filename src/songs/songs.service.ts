@@ -1,35 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Song } from './entities/songs.entity';
+import { Repository } from 'typeorm';
+import { CreateSongDto } from './dto/create-song.dto/create-song.dto';
+import { UpdateSongDto } from './dto/update-song.dto/update-song.dto';
 
 @Injectable()
 export class SongsService {
-  private songs: Song[] = [
-    {
-      id: '1',
-      name: 'Whatever',
-      artist: 'Oasis',
-      artistId: '',
-      album: '',
-      albumId: '',
-    },
-  ];
-
-  #findIndex(id: string) {
-    const songIndex = this.songs.findIndex((item) => item.id === id);
-
-    if (!songIndex) {
-      throw new NotFoundException(`song ${id} not found`);
-    }
-
-    return songIndex;
-  }
+  constructor(
+    @InjectRepository(Song)
+    private readonly songRepo: Repository<Song>,
+  ) {}
 
   findAll() {
-    return this.songs;
+    return this.songRepo.find();
   }
 
-  findOne(id: string) {
-    const song = this.songs.find((item) => item.id === id);
+  async findOne(id: string) {
+    const song = await this.songRepo.findOne({ where: { id: +id } });
 
     if (!song) {
       throw new NotFoundException(`song ${id} not found`);
@@ -38,26 +26,26 @@ export class SongsService {
     return song;
   }
 
-  create(body: any) {
-    const song = body;
-    song.id = (this.songs.length + 1).toString();
-    this.songs.push(body);
+  create(dto: CreateSongDto) {
+    const song = this.songRepo.create(dto);
+    return this.songRepo.save(song);
   }
 
-  updateOne(id: string, body: any) {
-    const foundSongIndex = this.#findIndex(id);
-    console.log(foundSongIndex);
-    if (foundSongIndex) {
-      this.songs[foundSongIndex] = {
-        ...this.songs[foundSongIndex],
-        ...body,
-      };
-    }
-  }
-
-  deleteOne(id: string) {
-    this.songs = this.songs.filter((item) => {
-      return item.id !== id;
+  async updateOne(id: string, dto: UpdateSongDto) {
+    const song = await this.songRepo.preload({
+      id: +id,
+      ...dto,
     });
+
+    if (!song) {
+      throw new NotFoundException(`song ${id} not found`);
+    }
+
+    return this.songRepo.save(song);
+  }
+
+  async deleteOne(id: string) {
+    const song = await this.findOne(id);
+    return this.songRepo.remove(song);
   }
 }
