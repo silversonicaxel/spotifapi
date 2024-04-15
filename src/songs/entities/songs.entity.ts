@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Author } from './authors.entity/authors.entity';
 
 @Entity('songs')
 export class Song {
@@ -20,6 +27,7 @@ export class Song {
   @Column()
   albumId: string;
 
-  @Column('json', { nullable: true })
+  @JoinTable()
+  @ManyToMany(() => Author, (author) => author.songs)
   authors: string[];
 }
