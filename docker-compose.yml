@@ -1,10 +1,24 @@
-version: '3'
+version: '3.5'
 
 services:
-  db:
+  postgres:
+    container_name: spotifapi_container
     image: postgres
-    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-spotifapi_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-spotifapi_pass}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
     ports:
       - '5432:5432'
-    environment:
-      POSTRGRES_PASSWORD: pass123
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
