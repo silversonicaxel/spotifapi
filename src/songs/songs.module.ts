@@ -10,5 +10,6 @@ import { Event } from '../events/entities/events.entity/events.entity';
   imports: [TypeOrmModule.forFeature([Song, Author, Event])],
   controllers: [SongsController],
   providers: [SongsService],
+  exports: [SongsService],
 })
 export class SongsModule {}
