@@ -1,35 +1,38 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Song } from './entities/songs.entity';
+import { DataSource, Repository } from 'typeorm';
+import { CreateSongDto } from './dto/create-song.dto/create-song.dto';
+import { UpdateSongDto } from './dto/update-song.dto/update-song.dto';
+import { Author } from './entities/authors.entity/authors.entity';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
+import { Event } from 'src/events/entities/events.entity/events.entity';
 
 @Injectable()
 export class SongsService {
-  private songs: Song[] = [
-    {
-      id: '1',
-      name: 'Whatever',
-      artist: 'Oasis',
-      artistId: '',
-      album: '',
-      albumId: '',
-    },
-  ];
+  constructor(
+    @InjectRepository(Song)
+    private readonly songRepo: Repository<Song>,
+    @InjectRepository(Author)
+    private readonly authorRepo: Repository<Author>,
+    private readonly dataSource: DataSource,
+  ) {}
 
-  #findIndex(id: string) {
-    const songIndex = this.songs.findIndex((item) => item.id === id);
+  findAll(paginationQuery: PaginationQueryDto) {
+    const { limit, offset } = paginationQuery;
 
-    if (!songIndex) {
-      throw new NotFoundException(`song ${id} not found`);
-    }
-
-    return songIndex;
+    return this.songRepo.find({
+      skip: offset,
+      take: limit,
+      relations: { authors: true },
+    });
   }
 
-  findAll() {
-    return this.songs;
-  }
-
-  findOne(id: string) {
-    const song = this.songs.find((item) => item.id === id);
+  async findOne(id: string) {
+    const song = await this.songRepo.findOne({
+      where: { id: +id },
+      relations: { authors: true },
+    });
 
     if (!song) {
       throw new NotFoundException(`song ${id} not found`);
@@ -38,26 +41,77 @@ export class SongsService {
     return song;
   }
 
-  create(body: any) {
-    const song = body;
-    song.id = (this.songs.length + 1).toString();
-    this.songs.push(body);
-  }
+  async create(dto: CreateSongDto) {
+    const authors = await Promise.all(
+      dto.authors.map((name) => this.#preloadAuthorByName(name)),
+    );
 
-  updateOne(id: string, body: any) {
-    const foundSongIndex = this.#findIndex(id);
-    console.log(foundSongIndex);
-    if (foundSongIndex) {
-      this.songs[foundSongIndex] = {
-        ...this.songs[foundSongIndex],
-        ...body,
-      };
-    }
-  }
-
-  deleteOne(id: string) {
-    this.songs = this.songs.filter((item) => {
-      return item.id !== id;
+    const song = this.songRepo.create({
+      ...dto,
+      authors,
     });
+    return this.songRepo.save(song);
+  }
+
+  async updateOne(id: string, dto: UpdateSongDto) {
+    const authors =
+      dto.authors &&
+      (await Promise.all(
+        dto.authors.map((name) => this.#preloadAuthorByName(name)),
+      ));
+
+    const song = await this.songRepo.preload({
+      id: +id,
+      ...dto,
+      authors,
+    });
+
+    if (!song) {
+      throw new NotFoundException(`song ${id} not found`);
+    }
+
+    return this.songRepo.save(song);
+  }
+
+  async deleteOne(id: string) {
+    const song = await this.findOne(id);
+    return this.songRepo.remove(song);
+  }
+
+  async #preloadAuthorByName(name: string): Promise<Author> {
+    const author = await this.authorRepo.findOne({
+      where: { name },
+    });
+
+    if (author) {
+      return author;
+    }
+
+    return this.authorRepo.create({ name });
+  }
+
+  async recommendSong(song: Song) {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      song.recommendations++;
+
+      const recommendationEvent = new Event();
+      recommendationEvent.name = 'recommend_song';
+      recommendationEvent.type = 'song';
+      recommendationEvent.payload = { songId: song.id };
+
+      await queryRunner.manager.save(song);
+      await queryRunner.manager.save(recommendationEvent);
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
