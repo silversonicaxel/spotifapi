@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Song } from './entities/songs.entity';
 import { DataSource, Repository } from 'typeorm';
@@ -7,6 +7,7 @@ import { UpdateSongDto } from './dto/update-song.dto/update-song.dto';
 import { Author } from './entities/authors.entity/authors.entity';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
 import { Event } from 'src/events/entities/events.entity/events.entity';
+import { SONG_FORMATS, SONG_STORES } from './songs.constants';
 
 @Injectable()
 export class SongsService {
@@ -16,7 +17,14 @@ export class SongsService {
     @InjectRepository(Author)
     private readonly authorRepo: Repository<Author>,
     private readonly dataSource: DataSource,
-  ) {}
+    @Inject(SONG_FORMATS)
+    songFormats: string[],
+    @Inject(SONG_STORES)
+    songStores: string[],
+  ) {
+    console.log(songFormats);
+    console.log(songStores);
+  }
 
   findAll(paginationQuery: PaginationQueryDto) {
     const { limit, offset } = paginationQuery;
